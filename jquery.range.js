@@ -236,6 +236,7 @@
       if(this.fitBounds){
         left = Math.min(Math.max(left, 0), this.options.width - width);
       }
+    
       label[animate ? 'animate' : 'css']({
         left: left
       });
