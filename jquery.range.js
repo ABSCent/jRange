@@ -18,15 +18,15 @@
  *
  **/
 ;
-(function ($, window, document, undefined) {
+(function($, window, document, undefined) {
   'use strict';
 
-  var jRange = function () {
+  var jRange = function() {
     return this.init.apply(this, arguments);
   };
   jRange.prototype = {
     defaults: {
-      onstatechange: function () {},
+      onstatechange: function() {},
       isRange: false,
       showLabels: true,
       showScale: true,
@@ -35,7 +35,7 @@
       theme: 'theme-green',
       width: 300,
       disable: false,
-      fitBounds: false
+      fitBounds:false
     },
     template: '<div class="slider-container">\
       <div class="back-bar">\
@@ -46,27 +46,27 @@
             </div>\
             <div class="scale"></div>\
     </div>',
-    init: function (node, options) {
-      this.options = $.extend({}, this.defaults, options);
-      this.inputNode = $(node);
+    init: function(node, options) {
+      this.options       = $.extend({}, this.defaults, options);
+      this.inputNode     = $(node);
       this.options.value = this.inputNode.val() || (this.options.isRange ? this.options.from + ',' + this.options.from : this.options.from);
-      this.domNode = $(this.template);
+      this.domNode       = $(this.template);
       this.domNode.addClass(this.options.theme);
       this.inputNode.after(this.domNode);
       this.domNode.on('change', this.onChange);
-      this.pointers = $('.pointer', this.domNode);
-      this.lowPointer = this.pointers.first();
-      this.highPointer = this.pointers.last();
-      this.labels = $('.pointer-label', this.domNode);
-      this.lowLabel = this.labels.first();
-      this.highLabel = this.labels.last();
-      this.scale = $('.scale', this.domNode);
-      this.bar = $('.selected-bar', this.domNode);
-      this.clickableBar = this.domNode.find('.clickable-dummy');
-      this.interval = this.options.to - this.options.from;
+      this.pointers      = $('.pointer', this.domNode);
+      this.lowPointer    = this.pointers.first();
+      this.highPointer   = this.pointers.last();
+      this.labels        = $('.pointer-label', this.domNode);
+      this.lowLabel      = this.labels.first();
+      this.highLabel     = this.labels.last();
+      this.scale         = $('.scale', this.domNode);
+      this.bar           = $('.selected-bar', this.domNode);
+      this.clickableBar  = this.domNode.find('.clickable-dummy');
+      this.interval      = this.options.to - this.options.from;
       this.render();
     },
-    render: function () {
+    render: function() {
       // Check if inputNode is visible, and have some width, so that we can set slider width accordingly.
       if (this.inputNode.width() === 0 && !this.options.width) {
         console.log('jRange : no width found, returning');
@@ -89,22 +89,22 @@
       }
       this.setValue(this.options.value);
     },
-    isSingle: function () {
-      if (typeof (this.options.value) === 'number') {
+    isSingle: function() {
+      if (typeof(this.options.value) === 'number') {
         return true;
       }
       return (this.options.value.indexOf(',') !== -1 || this.options.isRange) ?
         false : true;
     },
-    attachEvents: function () {
+    attachEvents: function() {
       this.clickableBar.click($.proxy(this.barClicked, this));
       this.pointers.on('mousedown touchstart', $.proxy(this.onDragStart, this));
-      this.pointers.bind('dragstart', function (event) {
+      this.pointers.bind('dragstart', function(event) {
         event.preventDefault();
       });
     },
-    onDragStart: function (e) {
-      if (this.options.disable || (e.type === 'mousedown' && e.which !== 1)) {
+    onDragStart: function(e) {
+      if ( this.options.disable || (e.type === 'mousedown' && e.which !== 1)) {
         return;
       }
       e.stopPropagation();
@@ -116,7 +116,7 @@
       $(document).on('mousemove.slider touchmove.slider', $.proxy(this.onDrag, this, pointer));
       $(document).on('mouseup.slider touchend.slider touchcancel.slider', $.proxy(this.onDragEnd, this));
     },
-    onDrag: function (pointer, e) {
+    onDrag: function(pointer, e) {
       e.stopPropagation();
       e.preventDefault();
 
@@ -129,13 +129,13 @@
       var position = e.clientX - this.domNode.offset().left;
       this.domNode.trigger('change', [this, pointer, position]);
     },
-    onDragEnd: function (e) {
+    onDragEnd: function(e) {
       this.pointers.removeClass('focused');
       this.labels.removeClass('focused');
       $(document).off('.slider');
     },
-    barClicked: function (e) {
-      if (this.options.disable) return;
+    barClicked: function(e) {
+      if(this.options.disable) return;
       var x = e.pageX - this.clickableBar.offset().left;
       if (this.isSingle())
         this.setPosition(this.pointers.last(), x, true, true);
@@ -145,7 +145,7 @@
         this.setPosition(pointer, x, true, true);
       }
     },
-    onChange: function (e, self, pointer, position) {
+    onChange: function(e, self, pointer, position) {
       var min, max;
       if (self.isSingle()) {
         min = 0;
@@ -157,7 +157,7 @@
       var value = Math.min(Math.max(position, min), max);
       self.setPosition(pointer, value, true);
     },
-    setPosition: function (pointer, position, isPx, animate) {
+    setPosition: function(pointer, position, isPx, animate) {
       var leftPos,
         lowPos = this.lowPointer.position().left,
         highPos = this.highPointer.position().left,
@@ -186,7 +186,7 @@
       this.isReadonly();
     },
     // will be called from outside
-    setValue: function (value) {
+    setValue: function(value) {
       var values = value.toString().split(',');
       this.options.value = value;
       var prc = this.valuesToPrc(values.length === 2 ? values : [0, values[0]]);
@@ -197,7 +197,7 @@
         this.setPosition(this.highPointer, prc[1]);
       }
     },
-    renderScale: function () {
+    renderScale: function() {
       var s = this.options.scale || [this.options.from, this.options.to];
       var prc = Math.round((100 / (s.length - 1)) * 10) / 10;
       var str = '';
@@ -206,13 +206,13 @@
       }
       this.scale.html(str);
 
-      $('ins', this.scale).each(function () {
+      $('ins', this.scale).each(function() {
         $(this).css({
           marginLeft: -$(this).outerWidth() / 2
         });
       });
     },
-    getBarWidth: function () {
+    getBarWidth: function() {
       var values = this.options.value.split(',');
       if (values.length > 1) {
         return parseInt(values[1], 10) - parseInt(values[0], 10);
@@ -220,8 +220,7 @@
         return parseInt(values[0], 10);
       }
     },
-    showPointerValue: function (pointer, position, animate) {
-      console.log(this.options.fitBounds);
+    showPointerValue: function(pointer, position, animate) {
       var label = $('.pointer-label', this.domNode)[pointer.hasClass('low') ? 'first' : 'last']();
       var text;
       var value = this.positionToValue(position);
@@ -231,9 +230,10 @@
       } else {
         text = this.options.format.replace('%s', value);
       }
+
       var width = label.html(text).width(),
         left = position - width / 2;
-      if (this.options.fitBounds) {
+      if(this.fitBounds){
         left = Math.min(Math.max(left, 0), this.options.width - width);
       }
       label[animate ? 'animate' : 'css']({
@@ -241,20 +241,20 @@
       });
       this.setInputValue(pointer, value);
     },
-    valuesToPrc: function (values) {
+    valuesToPrc: function(values) {
       var lowPrc = ((values[0] - this.options.from) * 100 / this.interval),
         highPrc = ((values[1] - this.options.from) * 100 / this.interval);
       return [lowPrc, highPrc];
     },
-    prcToPx: function (prc) {
+    prcToPx: function(prc) {
       return (this.domNode.width() * prc) / 100;
     },
-    positionToValue: function (pos) {
+    positionToValue: function(pos) {
       var value = (pos / this.domNode.width()) * this.interval;
       value = value + this.options.from;
       return Math.round(value / this.options.step) * this.options.step;
     },
-    setInputValue: function (pointer, v) {
+    setInputValue: function(pointer, v) {
       // if(!isChanged) return;
       if (this.isSingle()) {
         this.options.value = v.toString();
@@ -271,21 +271,21 @@
         this.options.onstatechange.call(this, this.options.value);
       }
     },
-    getValue: function () {
+    getValue: function() {
       return this.options.value;
     },
-    isReadonly: function () {
+    isReadonly: function(){
       this.domNode.toggleClass('slider-readonly', this.options.disable);
     },
-    disable: function () {
+    disable: function(){
       this.options.disable = true;
       this.isReadonly();
     },
-    enable: function () {
+    enable: function(){
       this.options.disable = false;
       this.isReadonly();
     },
-    toggleDisable: function () {
+    toggleDisable: function(){
       this.options.disable = !this.options.disable;
       this.isReadonly();
     }
@@ -308,17 +308,17 @@
   var pluginName = 'jRange';
   // A really lightweight plugin wrapper around the constructor,
   // preventing against multiple instantiations
-  $.fn[pluginName] = function (option) {
+  $.fn[pluginName] = function(option) {
     var args = arguments,
       result;
 
-    this.each(function () {
+    this.each(function() {
       var $this = $(this),
         data = $.data(this, 'plugin_' + pluginName),
         options = typeof option === 'object' && option;
       if (!data) {
         $this.data('plugin_' + pluginName, (data = new jRange(this, options)));
-        $(window).resize(function () {
+        $(window).resize(function() {
           data.setValue(data.getValue());
         }); // Update slider position when window is resized to keep it in sync with scale
       }
